@@ -54,9 +54,9 @@ def data_processing(data: list[dict]) -> pd.DataFrame:
     df = pd.concat([df, expanded_aqi], axis=1)
 
     # Convert data types
-    numeric_cols = ['PM25.color_id', 'PM25.aqi']
+    numeric_cols = ['PM25.color_id', 'PM25.value']
 
-    df[numeric_cols] = df[numeric_cols].astype(int)
+    df[numeric_cols] = df[numeric_cols].astype(float)
     df['time'] = df['time'].mode()[0]
     df['date'] = df['date'].mode()[0]
     df['timestamp'] = pd.to_datetime(df['date'] + ' ' + df['time'])
