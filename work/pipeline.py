@@ -57,8 +57,8 @@ def data_processing(data: list[dict]) -> pd.DataFrame:
     numeric_cols = ['PM25.color_id', 'PM25.value']
 
     df[numeric_cols] = df[numeric_cols].astype(float)
-    df['time'] = df['time'].mode()[0]
-    df['date'] = df['date'].mode()[0]
+    df['time'] = df[df['date'] == df['date'].max()]['time'].max()
+    df['date'] = df['date'].max()
     df['timestamp'] = pd.to_datetime(df['date'] + ' ' + df['time'])
 
     # Make Datetime attribute columns for partitioning in parquet file.
