@@ -10,6 +10,8 @@ services:
       LAKEFS_DATABASE_TYPE: "local"
       LAKEFS_AUTH_ENCRYPT_SECRET_KEY: "wait"
       LAKEFS_BLOCKSTORE_TYPE: "local"
+    volumes:
+      - ./data:/home/lakefs
 
   postgres:
     image: postgres:13-alpine
@@ -67,8 +69,8 @@ services:
 
   streamlit:
     build:
-      context: ./make
-      dockerfile: Dockerfile.streamlit
+      context: .
+      dockerfile: ./make/Dockerfile.streamlit
     ports:
       - "8501:8501"
     volumes:

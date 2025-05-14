@@ -174,3 +174,10 @@ cython_debug/
 .pypirc
 
 fixing.ipynb
+
+work/aqi.csv
+work/read.ipynb
+data/
+
+grading.py
+grading_summary.json
