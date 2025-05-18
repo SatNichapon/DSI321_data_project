@@ -177,7 +177,7 @@ fixing.ipynb
 
 work/aqi.csv
 work/read.ipynb
-data/
+data/lakefs
 
 grading.py
 grading_summary.json

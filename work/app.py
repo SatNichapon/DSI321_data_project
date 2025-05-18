@@ -48,7 +48,7 @@ def filter_data(df, start_date, end_date, station):
     if station != "ทั้งหมด":
         df_filtered = df_filtered[df_filtered['nameTH'] == station]
 
-    # Remove invalid AQI
+    # Remove invalid values
     df_filtered = df_filtered[df_filtered['PM25.value'] >= 0]
 
     return df_filtered
@@ -183,7 +183,7 @@ else:
     df_selected = df_filtered[df_filtered['nameTH'] == station]
     title = f"PM2.5 - สถานี {station}"
 
-# Left column: Thailand map with AQI
+# Left column: Thailand map with PM2.5 value
 with fig_col1:
     if not df_selected.empty:
         df_map = df_selected.groupby(['stationID', 'nameTH', 'lat', 'long'], as_index=False)['PM25.value'].mean()
@@ -231,7 +231,7 @@ with fig_col1:
 with fig_col2:
     if not df_selected.empty:
         if station == "ทั้งหมด":
-            # Filter the top 5 stations with highest average AQI
+            # Filter the top 5 stations with highest average PM2.5 value
             top_5_stations = df_selected.groupby('nameTH')['PM25.value'].mean().nlargest(5).index
             df_selected_top5 = df_selected[df_selected['nameTH'].isin(top_5_stations)]
             
