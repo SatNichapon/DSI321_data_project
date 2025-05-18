@@ -8,13 +8,12 @@ import s3fs
 from zoneinfo import ZoneInfo
 from datetime import datetime
 
-
-# Setting up environments from LakeFS
+# Set up environments of LakeFS
 lakefs_endpoint = os.getenv("LAKEFS_ENDPOINT", "http://lakefs-dev:8000")
-ACCESS_KEY = os.getenv("LAKEFS_ACCESS_KEY")
-SECRET_KEY = os.getenv("LAKEFS_SECRET_KEY")
+ACCESS_KEY = 'access_key'
+SECRET_KEY = 'secret_key'
 
-# Setting S3FileSystem to access LakeFS
+# Setting S3FileSystem for access LakeFS
 fs = s3fs.S3FileSystem(
     key=ACCESS_KEY,
     secret=SECRET_KEY,
@@ -25,20 +24,15 @@ fs = s3fs.S3FileSystem(
 def load_data():
     lakefs_path = "s3://air-quality/main/airquality.parquet/year=2025"
     data_list = fs.glob(f"{lakefs_path}/*/*/*/*")
-    df_all = pd.concat([pd.read_parquet(f"s3://{path}", engine="pyarrow", filesystem=fs) for path in data_list], ignore_index=True)
-    # Change Data Type
+    df_all = pd.concat([pd.read_parquet(f"s3://{path}", filesystem=fs) for path in data_list], ignore_index=True)
     df_all['lat'] = pd.to_numeric(df_all['lat'], errors='coerce')
     df_all['long'] = pd.to_numeric(df_all['long'], errors='coerce')
-    df_all['year'] = df_all['year'].astype(int) 
+    df_all['year'] = df_all['year'].astype(int)
     df_all['month'] = df_all['month'].astype(int)
-    columns_to_convert = ['stationID', 'nameTH', 'nameEN', 'areaTH', 'areaEN', 'stationType']
-    for col in columns_to_convert:
-        df_all[col] = df_all[col].astype(pd.StringDtype())
-
     df_all.drop_duplicates(inplace=True)
     df_all['PM25.value'] = df_all['PM25.value'].mask(df_all['PM25.value'] < 0, pd.NA)
     # Fill value "Previous Record" Group By stationID
-    df_all['PM25.value'] = df_all.groupby('stationID')['PM25.value'].transform(lambda x: x.fillna(method='ffill'))
+    df_all['PM25.value'] = df_all.groupby('stationID')['PM25.value'].transform(lambda x: x.ffill())
     return df_all
 
 def filter_data(df, start_date, end_date, station):
